@@ -9,7 +9,7 @@ def employee_page(root, mycursor, conn):
     # functionality Part
 
     def id_exists(id):
-        mycursor.execute('SELECT COUNT(*) FROM empp_data WHERE empid=%s', id)
+        mycursor.execute('SELECT COUNT(*) FROM emp_data WHERE empid=%s', id)
         result = mycursor.fetchone()
         return result[0] > 0
 
@@ -36,7 +36,7 @@ def employee_page(root, mycursor, conn):
             passwordEntry.insert(0, row[13])
 
     def treeview_data():
-        mycursor.execute('SELECT * from empp_data')
+        mycursor.execute('SELECT * from emp_data')
         employees = mycursor.fetchall()
         treeview.delete(*treeview.get_children())
         for employee in employees:
@@ -69,7 +69,7 @@ def employee_page(root, mycursor, conn):
         else:
             result = messagebox.askyesno('Confirm', 'Do you really want to delete?', parent=employee_window)
             if result:
-                mycursor.execute('DELETE FROM empp_data WHERE empid=%s', empIdEntry.get())
+                mycursor.execute('DELETE FROM emp_data WHERE empid=%s', empIdEntry.get())
                 conn.commit()
                 treeview_data()
                 clear()
@@ -98,7 +98,7 @@ def employee_page(root, mycursor, conn):
             password = passwordEntry.get()
 
             mycursor.execute(
-                'SELECT name, email, gender, dob, contact, employment_type, education, work_shift, address, doj, salary, usertype, password FROM empp_data WHERE empid=%s',
+                'SELECT name, email, gender, dob, contact, employment_type, education, work_shift, address, doj, salary, usertype, password FROM emp_data WHERE empid=%s',
                 (empid,))
             current_data = mycursor.fetchone()
 
@@ -112,7 +112,7 @@ def employee_page(root, mycursor, conn):
             else:
 
                 mycursor.execute(
-                    'UPDATE empp_data SET name=%s, email=%s, gender=%s, dob=%s, contact=%s, employment_type=%s, education=%s, work_shift=%s,address=%s,doj=%s,salary=%s,usertype=%s,password=%s WHERE empid=%s',
+                    'UPDATE emp_data SET name=%s, email=%s, gender=%s, dob=%s, contact=%s, employment_type=%s, education=%s, work_shift=%s,address=%s,doj=%s,salary=%s,usertype=%s,password=%s WHERE empid=%s',
                     (name, email, gender, dob, contact, employment_type, education, work_shift, address, doj, salary, usertype,
                      password,
                      empid))
@@ -143,7 +143,7 @@ def employee_page(root, mycursor, conn):
         elif id_exists(empid):
             messagebox.showerror('Error', 'Id already exists', parent=employee_window)
         else:
-            mycursor.execute('INSERT INTO empp_data VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (
+            mycursor.execute('INSERT INTO emp_data VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)', (
                 empid, name, email, gender, dob, contact, employment_type, education, work_shift, address, doj, salary, usertype,
                 password))
             conn.commit()
@@ -157,7 +157,7 @@ def employee_page(root, mycursor, conn):
         elif search_combobox.get() == 'Search By':
             messagebox.showerror('Error', 'Please select an option', parent=employee_window)
         else:
-            mycursor.execute(f'SELECT * FROM empp_data WHERE {search_combobox.get()} LIKE %s',
+            mycursor.execute(f'SELECT * FROM emp_data WHERE {search_combobox.get()} LIKE %s',
                              '%' + searchEntry.get() + '%')
             result = mycursor.fetchall()
             if len(result) == 0:
@@ -230,7 +230,7 @@ def employee_page(root, mycursor, conn):
     treeview.heading('address', text='Address')
     treeview.heading('doj', text='Date of Joining')
     treeview.heading('salary', text='Salary')
-    treeview.heading('usertype', text='User')
+    treeview.heading('usertype', text='User Type')
 
     treeview.column('empid', width=60)
     treeview.column('gender', width=80)
@@ -311,7 +311,7 @@ def employee_page(root, mycursor, conn):
     dojDateEntry = DateEntry(detailsFrame, font=('times new roman', 12), bg='lightblue', width=18, date_pattern='dd/MM/yyyy',
                          state='readonly')
     dojDateEntry.grid(row=3, column=3)
-    userTypeLabel = Label(detailsFrame, text='User', font=('times new roman', 12), bg='white')
+    userTypeLabel = Label(detailsFrame, text='User Type', font=('times new roman', 12), bg='white')
     userTypeLabel.grid(row=4, column=2, padx=(60, 10), sticky='w', pady=(15, 0))
     userTypecombobox = ttk.Combobox(detailsFrame, font=('times new roman', 12), width=18, values=('Employee', 'Admin'),
                                     state='readonly')
