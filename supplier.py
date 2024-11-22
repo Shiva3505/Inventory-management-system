@@ -8,7 +8,7 @@ def supplier_page(root, mycursor, conn):
     # functionality Part
 
     def id_exists(id):
-        mycursor.execute('SELECT COUNT(*) FROM supp_data WHERE invoice=%s', id)
+        mycursor.execute('SELECT COUNT(*) FROM sup_data WHERE invoice=%s', id)
         result = mycursor.fetchone()
         return result[0] > 0
 
@@ -25,7 +25,7 @@ def supplier_page(root, mycursor, conn):
             descriptionText.insert(1.0, row[3])
 
     def treeview_data():
-        mycursor.execute('SELECT * from supp_data')
+        mycursor.execute('SELECT * from sup_data')
         suppliers = mycursor.fetchall()
         treeview.delete(*treeview.get_children())
         for supply in suppliers:
@@ -47,7 +47,7 @@ def supplier_page(root, mycursor, conn):
         else:
             result = messagebox.askyesno('Confirm', 'Do you really want to delete?', parent=supplier_window)
             if result:
-                mycursor.execute('DELETE FROM supp_data WHERE invoice=%s', invoiceEntry.get())
+                mycursor.execute('DELETE FROM sup_data WHERE invoice=%s', invoiceEntry.get())
                 conn.commit()
                 treeview_data()
                 clear()
@@ -63,7 +63,7 @@ def supplier_page(root, mycursor, conn):
             invoice = invoiceEntry.get()
 
             # Fetch the current data for the selected item
-            mycursor.execute('SELECT name, contact, description FROM supp_data WHERE invoice = %s', (invoice,))
+            mycursor.execute('SELECT name, contact, description FROM sup_data WHERE invoice = %s', (invoice,))
             current_data = mycursor.fetchone()
 
             # Get the new data entered by the user
@@ -79,7 +79,7 @@ def supplier_page(root, mycursor, conn):
             else:
                 # Update the data
                 mycursor.execute(
-                    'UPDATE supp_data SET name=%s, contact=%s, description=%s WHERE invoice=%s',
+                    'UPDATE sup_data SET name=%s, contact=%s, description=%s WHERE invoice=%s',
                     (new_name, new_contact, new_description, invoice))
                 conn.commit()
                 treeview_data()
@@ -94,7 +94,7 @@ def supplier_page(root, mycursor, conn):
         elif id_exists(invoiceEntry.get()):
             messagebox.showerror('Error', 'Id already exists', parent=supplier_window)
         else:
-            mycursor.execute('INSERT INTO supp_data VALUES (%s,%s,%s,%s)', (
+            mycursor.execute('INSERT INTO sup_data VALUES (%s,%s,%s,%s)', (
                 invoiceEntry.get(), suppliernameEntry.get(), contactEntry.get(), descriptionText.get(1.0, END)))
             conn.commit()
             treeview_data()
@@ -106,7 +106,7 @@ def supplier_page(root, mycursor, conn):
             messagebox.showerror('Error', 'Enter value to search', parent=supplier_window)
 
         else:
-            mycursor.execute(f'SELECT * FROM supp_data WHERE invoice = %s', searchEntry.get())
+            mycursor.execute(f'SELECT * FROM sup_data WHERE invoice = %s', searchEntry.get())
             result = mycursor.fetchall()
             if len(result) == 0:
                 messagebox.showerror('Error', 'No record found', parent=supplier_window)
@@ -140,24 +140,24 @@ def supplier_page(root, mycursor, conn):
     leftFrame = Frame(supplier_window, bg='white')
     leftFrame.place(x=10, y=100)
 
-    invoiceLabel = Label(leftFrame, text='Invoice No.', font=('times new roman', 13,'bold'), bg='white')
+    invoiceLabel = Label(leftFrame, text='Id', font=('times new roman', 13,'bold'), bg='white')
     invoiceLabel.grid(row=0, column=0, sticky='w', padx=(10, 20))
-    invoiceEntry = Entry(leftFrame, font=('times new roman', 13), bg='white')
+    invoiceEntry = Entry(leftFrame, font=('times new roman', 13), bg='lightyellow')
     invoiceEntry.grid(row=0, column=1, pady=20, sticky='w')
 
-    suppliernameLabel = Label(leftFrame, text='Supplier Name', font=('times new roman', 13,'bold'), bg='white')
+    suppliernameLabel = Label(leftFrame, text='Supplier ', font=('times new roman', 13,'bold'), bg='white')
     suppliernameLabel.grid(row=1, column=0, sticky='w', padx=(10, 20))
-    suppliernameEntry = Entry(leftFrame, font=('times new roman', 13), bg='white')
+    suppliernameEntry = Entry(leftFrame, font=('times new roman', 13), bg='lightyellow')
     suppliernameEntry.grid(row=1, column=1, sticky='w')
 
-    contactLabel = Label(leftFrame, text='Contact', font=('times new roman', 13,'bold'), bg='white')
+    contactLabel = Label(leftFrame, text='Mobile No', font=('times new roman', 13,'bold'), bg='white')
     contactLabel.grid(row=2, column=0, sticky='w', padx=(10, 20))
-    contactEntry = Entry(leftFrame, font=('times new roman', 13), bg='white')
+    contactEntry = Entry(leftFrame, font=('times new roman', 13), bg='lightyellow')
     contactEntry.grid(row=2, column=1, pady=20, sticky='w')
 
     descriptionLabel = Label(leftFrame, text='Description', font=('times new roman', 13,'bold'), bg='white')
     descriptionLabel.grid(row=3, column=0, sticky='nw', padx=(10, 20))
-    descriptionText = Text(leftFrame, font=('times new roman', 14), bg='white', width=40, height=8)
+    descriptionText = Text(leftFrame, font=('times new roman', 14), bg='lightyellow', width=40, height=8)
     descriptionText.grid(row=3, column=1)
 
     # buttons
@@ -180,7 +180,7 @@ def supplier_page(root, mycursor, conn):
     searchFrame = Frame(supplier_window, bg='white')
     searchFrame.place(x=565, y=115)
 
-    invoiceLabel = Label(searchFrame, text='Invoice No.', font=('times new roman', 13,'bold'), bg='white')
+    invoiceLabel = Label(searchFrame, text='Id', font=('times new roman', 13,'bold'), bg='white')
     invoiceLabel.grid(row=0, column=0, padx=20)
     searchEntry = Entry(searchFrame, font=('times new roman', 13), bg='lightyellow', width=14)
     searchEntry.grid(row=0, column=1)
