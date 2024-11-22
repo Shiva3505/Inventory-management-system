@@ -22,7 +22,7 @@ def product_page(root, mycursor, conn):
             statusCombobox.set(row[8])
 
     def treeview_data():
-        mycursor.execute('SELECT * from pro_data')
+        mycursor.execute('SELECT * from product_data')
         suppliers = mycursor.fetchall()
         treeview.delete(*treeview.get_children())
         for supply in suppliers:
@@ -50,7 +50,7 @@ def product_page(root, mycursor, conn):
             if result:
                 row = treeview.item(selected_item)
                 category_id = row['values'][0]
-                mycursor.execute('DELETE FROM pro_data WHERE id=%s', category_id)
+                mycursor.execute('DELETE FROM product_data WHERE id=%s', category_id)
                 conn.commit()
                 treeview_data()
                 clear()
@@ -95,7 +95,7 @@ def product_page(root, mycursor, conn):
 
                     # Update the record in the database
                     mycursor.execute(
-                        'UPDATE pro_data SET category=%s, supplier=%s, name=%s, price=%s, discount=%s, price_after_discount=%s, quantity=%s, status=%s WHERE id=%s',
+                        'UPDATE product_data SET category=%s, supplier=%s, name=%s, price=%s, discount=%s, price_after_discount=%s, quantity=%s, status=%s WHERE id=%s',
                         (
                             new_values['category'],
                             new_values['supplier'],
@@ -121,14 +121,14 @@ def product_page(root, mycursor, conn):
         global cat_row, sup_row
         category_options = []
         supplier_options = []
-        mycursor.execute('SELECT name FROM cat_data')
+        mycursor.execute('SELECT name FROM category_data')
         cat_row = mycursor.fetchall()
         if len(cat_row) > 0:
             categoryCombobox.set('Select')
             for name in cat_row:
                 category_options.append(name[0])
             categoryCombobox.config(values=category_options)
-        mycursor.execute('SELECT name FROM supp_data')
+        mycursor.execute('SELECT name FROM sup_data')
         sup_row = mycursor.fetchall()
         if len(sup_row) > 0:
             supplierCombobox.set('Select')
@@ -148,7 +148,7 @@ def product_page(root, mycursor, conn):
         else:
 
             mycursor.execute(
-                'SELECT * FROM pro_data WHERE category = %s AND supplier = %s AND name = %s',
+                'SELECT * FROM product_data WHERE category = %s AND supplier = %s AND name = %s',
                 (categoryCombobox.get(), supplierCombobox.get(), nameEntry.get())
             )
             existing_record = mycursor.fetchone()
@@ -171,7 +171,7 @@ def product_page(root, mycursor, conn):
 
                     # Insert data into database
                     mycursor.execute(
-                        'INSERT INTO pro_data (category, supplier, name, price, discount, price_after_discount, quantity, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
+                        'INSERT INTO product_data (category, supplier, name, price, discount, price_after_discount, quantity, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)',
                         (
                             category,
                             supplier,
@@ -197,7 +197,7 @@ def product_page(root, mycursor, conn):
             messagebox.showerror('Error', 'Please select an option', parent=product_window)
 
         else:
-            mycursor.execute(f'SELECT * FROM pro_data WHERE {searchCombobox.get()}=%s', searchEntry.get())
+            mycursor.execute(f'SELECT * FROM product_data WHERE {searchCombobox.get()}=%s', searchEntry.get())
             result = mycursor.fetchall()
             if len(result) == 0:
                 messagebox.showerror('Error', 'No record found', parent=product_window)
@@ -246,12 +246,12 @@ def product_page(root, mycursor, conn):
 
     nameLabel = Label(leftFrame, text='Name', font=('times new roman', 15), bg='white')
     nameLabel.grid(row=3, column=0, padx=20, sticky='w')
-    nameEntry = Entry(leftFrame, font=('times new roman', 15), bg='white')
+    nameEntry = Entry(leftFrame, font=('times new roman', 15), bg='lightyellow')
     nameEntry.grid(row=3, column=1, sticky='w', pady=15)
 
     priceLabel = Label(leftFrame, text='Price', font=('times new roman', 15), bg='white')
     priceLabel.grid(row=4, column=0, sticky='w', padx=20)
-    priceEntry = Entry(leftFrame, font=('times new roman', 15), bg='white')
+    priceEntry = Entry(leftFrame, font=('times new roman', 15), bg='lightyellow')
     priceEntry.grid(row=4, column=1, pady=15, sticky='w')
 
     discountLabel = Label(leftFrame, text='Discount (%)', font=('times new roman', 15), bg='white')
@@ -261,7 +261,7 @@ def product_page(root, mycursor, conn):
 
     quantityLabel = Label(leftFrame, text='Quantity', font=('times new roman', 15), bg='white')
     quantityLabel.grid(row=6, column=0, sticky='w', padx=20)
-    quantityEntry = Entry(leftFrame, font=('times new roman', 15), bg='white')
+    quantityEntry = Entry(leftFrame, font=('times new roman', 15), bg='lightyellow')
     quantityEntry.grid(row=6, column=1, pady=15, sticky='w')
 
     statusLabel = Label(leftFrame, text='Status', font=('times new roman', 15), bg='white')
