@@ -12,7 +12,7 @@ def get_tax_from_database():
             host="localhost",
             user="root",
             password="Shiva3505@",
-            database="ims1_data1"
+            database="inventory_data5"
         )
         mycursor = conn.cursor()
         # Fetch the tax percentage from the database
@@ -61,7 +61,7 @@ def show_sales():
 def connection():
     global mycursor, conn, emp_name
     try:
-        conn = pymysql.connect(host='localhost', user='root', password='Shiva3505@', database='ims1_data1')
+        conn = pymysql.connect(host='localhost', user='root', password='Shiva3505@', database='inventory_data5')
         mycursor = conn.cursor()
     except:
         messagebox.showerror('Error', 'Something went wrong, Please open MySQL app before running again')
@@ -80,7 +80,7 @@ def connection():
 # Functions
 def treeview_data():
     mycursor.execute(
-        'SELECT id,name,price,discount,quantity,status from pro_data WHERE status="active"')
+        'SELECT id,name,price,discount,price_after_discount,quantity,status from product_data WHERE status="active"')
     suppliers = mycursor.fetchall()
     treeview.delete(*treeview.get_children())
     for supply in suppliers:
@@ -92,7 +92,7 @@ def search():
         messagebox.showerror('Error', 'Enter value to search', )
 
     else:
-        mycursor.execute(f'SELECT id,name,price,quantity,status FROM pro_data WHERE name=%s and status="active"',
+        mycursor.execute(f'SELECT id,name,price,quantity,status FROM product_data WHERE name=%s and status="active"',
                          searchEntry.get())
         result = mycursor.fetchall()
         if len(result) == 0:
@@ -192,12 +192,12 @@ def add_update_cart():
         messagebox.showerror('Error', 'Select Data')
     elif qtyEntry.get() == '':
         messagebox.showerror('Error', 'Add Quantity')
-    elif qtyEntry.get() > stock:
+    elif int(qtyEntry.get()) > stock:
         messagebox.showerror('Error', f'Sorry only {stock} quantity is there.')
     else:
         # prod_price=int(qtyEntry.get())*float(priceperqtyEntry.get().replace(',',''))
         prod_price = float(priceperqtyEntry.get())
-        mycursor.execute('Select id,price from pro_data where name=%s', prodnameEntry.get())
+        mycursor.execute('Select id,price from product_data where name=%s', prodnameEntry.get())
         pid = mycursor.fetchone()
         original_price = float(pid[1])
         discount_amount = (original_price - prod_price) * int(qtyEntry.get())
@@ -232,6 +232,7 @@ def add_update_cart():
         show_cart()
         bill_update()
 
+
 def show_cart():
     tree_cart.delete(*tree_cart.get_children())
     for data in cart_data:
@@ -257,8 +258,8 @@ def bill_top():
     invoice = int(time.strftime("%H%M%S")) + int(time.strftime('%d%m%Y'))
 
     bill_temp = f'''
-    \t\t\tInventory Genius
-    \t\t Phone No. 7801043389, Hyderabad,500049
+    \t\t\tStockApp-Inventory
+    \t\t Phone No. 7801043388, Hyderabad,500049
     {str("=" * 54)}
     Customer Name: {nameEntry.get()}
     Phone no: {contactEntry.get()}
@@ -309,35 +310,21 @@ def bill_middle():
         name = row[1]
         price = float(row[2]) * int(row[3])
         qty = int(row[3])
-
-        # Ensure stock is treated as an integer and handle non-numeric values
-        try:
-            stock = int(row[4])  # Assuming row[4] should contain the stock value
-        except ValueError:
-            print(f"Invalid stock value for product {pid}. Stock: {row[4]}")  # Log or handle error
-            stock = 0  # Set stock to a default value in case of error
-
+        stock = int(row[4])
         left_qty = stock - qty  # Calculate remaining quantity
 
-        # Determine the status based on the remaining quantity
         if left_qty == 0:
             status = 'Inactive'
         else:
             status = 'Active'
-
-        # Get price and discount from the database
-        mycursor.execute('SELECT price,discount from pro_data WHERE id=%s', (pid,))
+        mycursor.execute('SELECT price,discount from product_data WHERE id=%s', pid)
         result = mycursor.fetchone()
-
         original_price = float(result[0])
         discount = float(result[1])
-        discount_amount = (discount / 100) * original_price
-
-        # Insert data into the textarea
+        discount_amount= (discount / 100) * original_price
         textarea.insert(END, f'\n    {name}\t\t{qty}\t₹{original_price}\t\t{discount}%={discount_amount}\t\t₹{price}')
-
-        # Update the database with new stock and status
-        mycursor.execute('UPDATE pro_data SET quantity=%s, status=%s WHERE id=%s', (left_qty, status, pid))
+        # Update the database
+        mycursor.execute('UPDATE product_data SET quantity=%s, status=%s WHERE id=%s', (left_qty, status, pid))
         conn.commit()
 
     treeview_data()  # Refresh the treeview after updating database
@@ -410,7 +397,7 @@ icon = PhotoImage(file='icon.png')
 titleLabel = Label(root, text='  Inventory Management System', image=icon, compound=LEFT,
                    font=('times new roman', 40, 'bold'), bg='#010c48', fg='white', anchor='w', padx=20)
 titleLabel.place(x=0, y=0, relwidth=1, height=70)
-logoutButton = Button(root, text='Logout', font=('times new roman', 20, 'bold'), bg='#0f4d7d', fg='white',
+logoutButton = Button(root, text='Logout', font=('times new roman', 20, 'bold'), bg='grey10', fg='white',
                       cursor='hand2', command=logout)
 logoutButton.place(x=1100, y=10, height=50, width=150)
 subtitleLabel = Label(root, text='Date:DD-MM-YYYY\t\t Time: HH:MM:SS',
