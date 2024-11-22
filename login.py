@@ -16,20 +16,20 @@ def connection():
     except:
         messagebox.showerror('Error', 'Something went wrong, Please open MySQL app before running again')
 
-    mycursor.execute('CREATE DATABASE IF NOT EXISTS ims1_data1')
-    mycursor.execute('USE ims1_data1')
+    mycursor.execute('CREATE DATABASE IF NOT EXISTS inventory_data5')
+    mycursor.execute('USE inventory_data5')
     mycursor.execute(
-        'CREATE TABLE IF NOT EXISTS supp_data (invoice INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), contact VARCHAR(15), description VARCHAR(150))')
+        'CREATE TABLE IF NOT EXISTS sup_data (invoice INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20), contact VARCHAR(10), description VARCHAR(100))')
     mycursor.execute(
-        'CREATE TABLE IF NOT EXISTS empp_data (empid INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), email VARCHAR('
-        '50), gender VARCHAR(20), dob VARCHAR(30), contact VARCHAR(30), employment_type VARCHAR(50), education VARCHAR(50), '
-        'work_shift VARCHAR(50), address VARCHAR(100), doj VARCHAR(30), salary VARCHAR(50), usertype VARCHAR(50), '
-        'password VARCHAR(50))')
+        'CREATE TABLE IF NOT EXISTS emp_data (empid INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20), email VARCHAR('
+        '30), gender VARCHAR(9), dob DATE, contact INT, employment_type VARCHAR(20), education VARCHAR(20), '
+        'work_shift VARCHAR(20), address VARCHAR(100), doj DATE, salary INT, usertype VARCHAR(20), '
+        'password INT)')
     mycursor.execute(
-        'CREATE TABLE IF NOT EXISTS pro_data (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, category VARCHAR(50), '
-        'supplier VARCHAR(50), name VARCHAR(50), price VARCHAR(50), discount VARCHAR(50),price_after_discount VARCHAR(50), quantity VARCHAR(50), status VARCHAR(50))')
+        'CREATE TABLE IF NOT EXISTS product_data (id INT AUTO_INCREMENT PRIMARY KEY NOT NULL, category VARCHAR(20), '
+        'supplier VARCHAR(20), name VARCHAR(20), price INT, discount INT,price_after_discount INT, quantity INT, status VARCHAR(10))')
     mycursor.execute(
-        'CREATE TABLE IF NOT EXISTS cat_data (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50), description VARCHAR(150))')
+        'CREATE TABLE IF NOT EXISTS category_data (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(20), description VARCHAR(100))')
 
     mycursor.execute(
         'CREATE TABLE IF NOT EXISTS sales ('
@@ -39,7 +39,7 @@ def connection():
         'quantity_sold INT, '
         'sale_date DATE, '
         'sale_amount DECIMAL(10, 2), '
-        'FOREIGN KEY (product_id) REFERENCES pro_data(id))'
+        'FOREIGN KEY (product_id) REFERENCES product_data(id))'
     )
     mycursor.execute("""
                                 CREATE TABLE IF NOT EXISTS settings (
@@ -91,7 +91,7 @@ def forget_password():
             messagebox.showerror('Error', 'Password mismatch', parent=forget_window)
         else:
 
-            mycursor.execute('UPDATE empp_data SET password=%s WHERE empid=%s', (newpassEntry.get(), empIdEntry.get()))
+            mycursor.execute('UPDATE emp_data SET password=%s WHERE empid=%s', (newpassEntry.get(), empIdEntry.get()))
             conn.commit()
             messagebox.showinfo('Success', 'Password is changed', parent=forget_window)
             forget_window.destroy()
@@ -100,13 +100,13 @@ def forget_password():
         messagebox.showerror('Error', 'Please enter employee id')
     else:
 
-        mycursor.execute('SELECT email from empp_data WHERE empid=%s',
+        mycursor.execute('SELECT email from emp_data WHERE empid=%s',
                          (empIdEntry.get(),))
         email = mycursor.fetchone()
         if email == None:
             messagebox.showerror('Error', 'Invalid employee id, try again')
         else:
-            mycursor.execute('SELECT name from empp_data WHERE empid=%s', (empIdEntry.get(),))
+            mycursor.execute('SELECT name from emp_data WHERE empid=%s', (empIdEntry.get(),))
             name = mycursor.fetchone()
             name = name[0]
             check = email_thread(email, name)
@@ -156,7 +156,7 @@ def forget_password():
 
 
 def check_empty_emp_data():
-    mycursor.execute('SELECT COUNT(*) FROM empp_data')
+    mycursor.execute('SELECT COUNT(*) FROM emp_data')
     count = mycursor.fetchone()[0]
     return count == 0
 
@@ -176,7 +176,7 @@ def login(event=None):
                 messagebox.showerror('Error',
                                      'No employee data found. Please log in using the default admin username and password.')
         else:
-            mycursor.execute('SELECT usertype from empp_data WHERE empid=%s AND password=%s',
+            mycursor.execute('SELECT usertype from emp_data WHERE empid=%s AND password=%s',
                              (empIdEntry.get(), passwordEntry.get()))
             user = mycursor.fetchone()
             if user == None:
