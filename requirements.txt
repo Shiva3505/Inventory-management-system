@@ -5,4 +5,4 @@ datetime
 matplotlib
 pandas
 pillow
-tkcalender
+tkcalendar
