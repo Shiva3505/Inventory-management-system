@@ -1,7 +1,6 @@
 customtkinter
 qrcode
 pymysql
-smtplib
 time
 threading
 datetime
