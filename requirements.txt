@@ -1,7 +1,6 @@
 customtkinter
 qrcode
 pymysql
-time
 threading
 datetime
 matplotlib
