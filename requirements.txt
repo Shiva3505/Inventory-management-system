@@ -6,6 +6,5 @@ matplotlib
 pandas
 pillow
 tkcalendar
-smtplib
 time
 threading
