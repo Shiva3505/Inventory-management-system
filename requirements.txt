@@ -2,7 +2,8 @@ tkinter
 qrcode
 pymysql
 smtplib
-time, threading
+time
+threading
 datetime
 matplotlib
 pandas
